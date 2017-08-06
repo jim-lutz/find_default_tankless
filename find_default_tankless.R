@@ -46,10 +46,9 @@ DT_TWH[OEMName==mfr,list(model)]
 DT_TWH[is.na(OEMName) | is.na(mfr), list(OEMName,mfr, model)][order(model)]
 # fixed some by hand
 
-# calculate Eannual_e from cost
-natl_gas_cost = 1.09 # $/therm
-propane_cost  = 2.14 # $/gallon
-elec_cost     = 0.12 # $/kWh
+# calculate Qin from Qout_UEF / UEF
+Qout.UEF = 45798 # BTU/day from high UEF draw procedure
+DT_TWH[, Qin.UEF:= Qout.UEF / UEF]
 
 names(DT_TWH)
 DT_TWH[,list(n=length(model)),by=fuel]
@@ -58,12 +57,17 @@ DT_TWH[,list(n=length(model)),by=fuel]
   # 2: Natural Gas 67
   # 3: Propane Gas 56
 
-# calculate the fuel costs
-DT_TWH[fuel=="Natural Gas", Eannual_f_cost:=Eannual_f*natl_gas_cost]
-DT_TWH[fuel=="Propane Gas", Eannual_f_cost:=Eannual_f*propane_cost]
+DT_TWH[fuel=="Natural Gas" & UEF==0.81,list(n=length(model)),by=Qin.UEF]
+  #     Qin.UEF  n
+  # 1: 56540.74 30
 
-# calculate the electricy cost
-DT_TWH[,Eannual_e_cost:=cost-Eannual_f_cost]
+# Calculate Qin.UEF_f 
+
+DT_TWH[, Qin.UEF_f := Eannual_f / 365 * 100000]
+DT_TWH[fuel=="Natural Gas" & UEF==0.81,list(n=length(model)),by=Qin.UEF_f]
+  #    Qin.UEF_f  n
+  # 1:  57260.27 30
+# But Qin.UEF_f > Qin.UEF!!!
 
 # calculate the electricity use
 DT_TWH[,Eannual_e:= Eannual_e_cost / elec_cost]
