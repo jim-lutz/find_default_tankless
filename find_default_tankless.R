@@ -71,6 +71,28 @@ DT_TWH[,Eannual_e:= Eannual_e_cost / elec_cost]
 # save to spreadsheet
 fwrite(DT_TWH, file = "baselineTWH.csv", quote=TRUE)
 
+# summarize 
+names(DT_TWH)
+DT_uniques <- function(varname) {
+  # return unique values of varname from 
+  # testing: varname = "Input"
+  DT_uniques <- DT_TWH[fuel=="Natural Gas" & UEF==0.81,list(n=length(model)),by=varname]
+  setorderv(DT_uniques,varname)
+  return(DT_uniques)
+}
+
+DT_uniques("Input")
+
+# look at unique values
+for(var in c('Input',"RecoveryEff","MaxGPM","Eannual_f","Eannual_f_cost","cost","Eannual_e_cost","Eannual_e")) {
+  print(DT_uniques((var)))
+}
+
+# do some cross-tabs
+table(DT_TWH[fuel=="Natural Gas" & UEF==0.81, list(Input,MaxGPM)])
+table(DT_TWH[fuel=="Natural Gas" & UEF==0.81, list(Input,RecoveryEff)])
+
+
 # quick look at Eannual_f vs Eannual_e
 p1 <- ggplot(data = DT_TWH[fuel=="Natural Gas" & UEF==0.81],aes(x=Input, y=Eannual_e))
 p1 <- p1 + geom_point() #position = "jitter"
