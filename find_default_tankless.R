@@ -72,8 +72,8 @@ DT_TWH[,Eannual_e:= Eannual_e_cost / elec_cost]
 fwrite(DT_TWH, file = "baselineTWH.csv", quote=TRUE)
 
 # quick look at Eannual_f vs Eannual_e
-p1 <- ggplot(data = DT_TWH[fuel=="Natural Gas" & UEF==0.81],aes(x=Eannual_f, y=Eannual_e))
-p1 <- p1 + geom_point(position = "jitter")
+p1 <- ggplot(data = DT_TWH[fuel=="Natural Gas" & UEF==0.81],aes(x=Input, y=Eannual_e))
+p1 <- p1 + geom_point() #position = "jitter"
 p1 <- p1 + scale_x_continuous(name = "Eannual_f (therms)")
 p1 <- p1 + scale_y_continuous(name = "Eannual_e (kWhs)")
 p1 <- p1 + ggtitle("Instantaneous Water Heaters \n(UEF=0.81, fuel=Natural Gas)")
