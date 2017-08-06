@@ -39,8 +39,10 @@ str(DT_TWH)
 
 # see how many merged
 DT_TWH[, list(OEMName,mfr)]
-DT_TWH[!is.na(OEMName) & !is.na(mfr), list(OEMName,mfr)] # 121 look like they match
+DT_TWH[!is.na(OEMName) & !is.na(mfr), list(OEMName,mfr)] # 122 look like they match
 DT_TWH[OEMName==mfr,list(model)] 
 
 # look at the ones that didn't match
 DT_TWH[is.na(OEMName) | is.na(mfr), list(OEMName,mfr, model)][order(model)]
+# fixed some by hand
+
