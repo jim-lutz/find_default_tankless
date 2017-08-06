@@ -68,6 +68,12 @@ DT_TWH[,Eannual_e_cost:=cost-Eannual_f_cost]
 # calculate the electricity use
 DT_TWH[,Eannual_e:= Eannual_e_cost / elec_cost]
 
+# calculate P,e
+# P,e = { Eannual,e * 1000 /365  -  S,e * (24 – Hon.UEF) } / Hon.UEF 
+S_e = 4 # assumed standby wattage
+Hon.UEF = 0.6542 # from High Usage UEF draw pattern
+DT_TWH[,P_e:= ( (Eannual_e * 1000 /365  -  S_e * (24 - Hon.UEF) ) / Hon.UEF )]
+
 # save to spreadsheet
 fwrite(DT_TWH, file = "baselineTWH.csv", quote=TRUE)
 
@@ -76,7 +82,7 @@ names(DT_TWH)
 DT_uniques <- function(varname) {
   # return unique values of varname from 
   # testing: varname = "Input"
-  DT_uniques <- DT_TWH[fuel=="Natural Gas" & UEF==0.81,list(n=length(model)),by=varname]
+  DT_uniques <- DT_TWH[fuel=="Propane Gas" & UEF==0.81,list(n=length(model)),by=varname]
   setorderv(DT_uniques,varname)
   return(DT_uniques)
 }
@@ -84,7 +90,7 @@ DT_uniques <- function(varname) {
 DT_uniques("Input")
 
 # look at unique values
-for(var in c('Input',"RecoveryEff","MaxGPM","Eannual_f","Eannual_f_cost","cost","Eannual_e_cost","Eannual_e")) {
+for(var in c('Input',"RecoveryEff","MaxGPM","Eannual_f","Eannual_f_cost","cost","Eannual_e_cost","Eannual_e","P_e")) {
   print(DT_uniques((var)))
 }
 
