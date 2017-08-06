@@ -39,10 +39,52 @@ str(DT_TWH)
 
 # see how many merged
 DT_TWH[, list(OEMName,mfr)]
-DT_TWH[!is.na(OEMName) & !is.na(mfr), list(OEMName,mfr)] # 122 look like they match
+DT_TWH[!is.na(OEMName) & !is.na(mfr), list(OEMName,mfr)] # 123 look like they match
 DT_TWH[OEMName==mfr,list(model)] 
 
 # look at the ones that didn't match
 DT_TWH[is.na(OEMName) | is.na(mfr), list(OEMName,mfr, model)][order(model)]
 # fixed some by hand
+
+# calculate Eannual_e from cost
+natl_gas_cost = 1.09 # $/therm
+propane_cost  = 2.14 # $/gallon
+elec_cost     = 0.12 # $/kWh
+
+names(DT_TWH)
+DT_TWH[,list(n=length(model)),by=fuel]
+  #           fuel  n
+  # 1:          NA 15
+  # 2: Natural Gas 67
+  # 3: Propane Gas 56
+
+# calculate the fuel costs
+DT_TWH[fuel=="Natural Gas", Eannual_f_cost:=Eannual_f*natl_gas_cost]
+DT_TWH[fuel=="Propane Gas", Eannual_f_cost:=Eannual_f*propane_cost]
+
+# calculate the electricy cost
+DT_TWH[,Eannual_e_cost:=cost-Eannual_f_cost]
+
+# calculate the electricity use
+DT_TWH[,Eannual_e:= Eannual_e_cost / elec_cost]
+
+# save to spreadsheet
+fwrite(DT_TWH, file = "baselineTWH.csv", quote=TRUE)
+
+# quick look at Eannual_f vs Eannual_e
+p1 <- ggplot(data = DT_TWH[fuel=="Natural Gas" & UEF==0.81],aes(x=Eannual_f, y=Eannual_e))
+p1 <- p1 + geom_point(position = "jitter")
+p1 <- p1 + scale_x_continuous(name = "Eannual_f (therms)")
+p1 <- p1 + scale_y_continuous(name = "Eannual_e (kWhs)")
+p1 <- p1 + ggtitle("Instantaneous Water Heaters \n(UEF=0.81, fuel=Natural Gas)")
+  
+# distribution of Eannual_f
+p2 <- ggplot(data = DT_TWH[fuel=="Natural Gas" & UEF==0.81],aes(x=Eannual_f))
+p2 <- p2 + geom_histogram(binwidth=.05)
+
+# turns out they've all got the same therms, slight variation of price
+DT_baseline <- DT_TWH[fuel=="Natural Gas" & UEF==0.81,list(mfr,model,Eannual_f,cost,Eannual_f_cost, Eannual_e_cost,Eannual_e )][order(-cost)]
+
+# save to spreadsheet
+fwrite(DT_baseline, file = "baselineNG.81.csv", quote=TRUE)
 

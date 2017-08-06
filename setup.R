@@ -52,6 +52,11 @@ library(stringr)
 if(!require(data.table)){install.packages("data.table")}
 library(data.table)
 
+# work with ggplot2
+if(!require(ggplot2)){install.packages("ggplot2")}
+library(ggplot2)
+
+
 # change the default background for ggplot2 to white, not gray
 theme_set( theme_bw() )
 
