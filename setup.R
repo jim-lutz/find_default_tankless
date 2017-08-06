@@ -56,7 +56,7 @@ library(data.table)
 theme_set( theme_bw() )
 
 # generic plot scaling methods
-if(!require(scales)){install.packages("scales")}
-library(scales)
+# if(!require(scales)){install.packages("scales")}
+# library(scales)
 
 

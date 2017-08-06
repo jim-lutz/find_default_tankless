@@ -3,8 +3,7 @@
 # merges AHRI directory data with parsed EnergyGuide label information
 # calculates Eannual_e from EnergyGuide information.
 # for EnergyGuide information extracted by ../EnergyGuide labels/energyguide.pl followed by some hand cleaning
-# AHRI data exported from https://www.ahridirectory.org/ahridirectory/pages/rwh/defaultSearch.aspx
-
+# AHRI data from ../AHRIExport.csv
 
 # make sure all packages loaded and start logging
 source("setup.R")
